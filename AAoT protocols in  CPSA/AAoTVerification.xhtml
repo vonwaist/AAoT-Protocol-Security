@@ -1,0 +1,630 @@
+<?xml version="1.0"?>
+<!-- CPSA 2.2.12 -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>AAoT Verification Protocol</title>
+ <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+ <style>
+  svg.diagram { border-width: 1px; border-style: solid }
+ </style>
+</head>
+<body>
+
+<pre>(herald &quot;AAoT Verification Protocol&quot;)
+(comment &quot;CPSA 2.2.12&quot;)
+(comment &quot;All input read from AAoTVerification.scm&quot;)</pre>
+
+<p id="top">Trees: <a href="#t0">0</a> <a href="#t3">3</a> <a href="#t5">5</a>.</p>
+
+<p id="t0">Tree <a href="#top">0</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.760pt' height='154.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.760 154.920' font-size='12.000'>
+  <text
+   x='139.800' y='101.040' style='text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k2&quot;, &quot;_self&quot;)'>2</text>
+  <line
+   x1='89.880' y1='77.460' x2='139.800' y2='114.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='139.800' y='26.040'
+   style='font-style: italic; text-anchor: middle; fill: green;'
+   onclick='window.open(&quot;#k2&quot;, &quot;_self&quot;)'>2</text>
+  <line
+   x1='89.880' y1='77.460' x2='139.800' y2='39.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='89.880' y='63.540' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k1&quot;, &quot;_self&quot;)'>1</text>
+  <line
+   x1='39.960' y1='77.460' x2='89.880' y2='77.460'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='39.960' y='63.540' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k0&quot;, &quot;_self&quot;)'>0</text>
+  </svg></div>
+
+<pre>(defprotocol AAoTVerification basic
+  (defrole prover
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (defrole verifier
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (comment &quot;AAoT Device Verification Protocol Definition&quot;))</pre>
+
+<p id="k0">Item <a href="#t0">0</a>, Child: <a href="#k1">1</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='529.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 529.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>(cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))</title>
+   <circle style='fill: red;' cx='39.960' cy='489.960' r='6.000'/></g>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle cx='39.960' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title><circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title><circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2) (idv idv) (idp idp) (k1 k1) (k2 k2))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>verifier</text>
+   </g>
+  <text
+   x='39.960' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 0</text></svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (nv c1 c2 np text) (h1 h2 data) (idv idp name) (k1 k2 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (non-orig k1 k2)
+  (uniq-orig nv c1 c2)
+  (comment &quot;Authentication from the verifier&apos;s perspective&quot;)
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (label 0)
+  (unrealized (0 5))
+  (origs (nv (0 4)) (c1 (0 2)) (c2 (0 4)))
+  (comment &quot;1 in cohort - 1 not yet seen&quot;))</pre>
+
+<p id="k1">Item <a href="#t0">1</a>, Parent: <a href="#k0">0</a>, Child: <a href="#k2">2</a>, Seen Child: <a href="#k2">2</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='529.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 529.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 139.920 489.960 Q 92.940 489.960 45.960 489.960'
+   style='stroke-dasharray: 6.000,2.400; stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g>
+   <title>(cat h2-0 (enc nv k2) (enc idv-0 idp-0 np-0 nv h2-0 c2-0 k2))</title>
+   <circle cx='139.920' cy='489.960' r='6.000'/></g>
+  <g><title>(cat nv c2-0 (enc idv-0 idp-0 np-0 h1-0 c1-0 k1-0))</title>
+   <circle style='fill: blue;' cx='139.920' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np-0 h1-0)</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>c1-0</title>
+   <circle style='fill: blue;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <g><title>idp-0</title><circle cx='139.920' cy='189.960' r='6.000'/>
+   </g>
+  <g><title>idv-0</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))</title>
+   <circle style='fill: red;' cx='39.960' cy='489.960' r='6.000'/></g>
+  <path
+   d='M 39.960 414.960 Q 86.940 414.960 133.920 414.960'
+   style='stroke-dasharray: 6.000,2.400; stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle cx='39.960' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title><circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title><circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv) (np np-0) (c1 c1-0) (c2 c2-0) (h1 h1-0) (h2 h2-0) (idv idv-0) (idp idp-0) (k1 k1-0) (k2 k2))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>prover</text>
+   </g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2) (idv idv) (idp idp) (k1 k1) (k2 k2))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>verifier</text>
+   </g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 1</text></svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (nv c1 c2 np np-0 c1-0 c2-0 text) (h1 h2 h1-0 h2-0 data)
+    (idv idp idv-0 idp-0 name) (k1 k2 k1-0 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (defstrand prover 6 (nv nv) (np np-0) (c1 c1-0) (c2 c2-0) (h1 h1-0)
+    (h2 h2-0) (idv idv-0) (idp idp-0) (k1 k1-0) (k2 k2))
+  (precedes ((0 4) (1 4)) ((1 5) (0 5)))
+  (non-orig k1 k2)
+  (uniq-orig nv c1 c2)
+  (operation encryption-test (added-strand prover 6) (enc nv k2) (0 5))
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))))
+    ((recv idv-0) (send idp-0) (recv c1-0) (send (cat np-0 h1-0))
+      (recv (cat nv c2-0 (enc idv-0 idp-0 np-0 h1-0 c1-0 k1-0)))
+      (send
+        (cat h2-0 (enc nv k2) (enc idv-0 idp-0 np-0 nv h2-0 c2-0 k2)))))
+  (label 1)
+  (parent 0)
+  (seen 2)
+  (unrealized (0 5))
+  (comment &quot;2 in cohort - 1 not yet seen&quot;))</pre>
+
+<p id="k2">Item <a href="#t0">2</a>, Parent: <a href="#k1">1</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='529.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 529.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 139.920 489.960 Q 92.940 489.960 45.960 489.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))</title>
+   <circle cx='139.920' cy='489.960' r='6.000'/></g>
+  <g><title>(cat nv c2 (enc idv idp np h1-0 c1-0 k1-0))</title>
+   <circle style='fill: blue;' cx='139.920' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1-0)</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>c1-0</title>
+   <circle style='fill: blue;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title><circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))</title>
+   <circle style='fill: blue;' cx='39.960' cy='489.960' r='6.000'/></g>
+  <path
+   d='M 39.960 414.960 Q 86.940 414.960 133.920 414.960'
+   style='stroke-dasharray: 6.000,2.400; stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle cx='39.960' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title><circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title><circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1-0) (c2 c2) (h1 h1-0) (h2 h2) (idv idv) (idp idp) (k1 k1-0) (k2 k2))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>prover</text>
+   </g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2) (idv idv) (idp idp) (k1 k1) (k2 k2))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>verifier</text>
+   </g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 2 (realized)</text>
+  </svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (nv c1 np c1-0 c2 text) (h1 h1-0 h2 data) (idv idp name)
+    (k1 k2 k1-0 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (defstrand prover 6 (nv nv) (np np) (c1 c1-0) (c2 c2) (h1 h1-0)
+    (h2 h2) (idv idv) (idp idp) (k1 k1-0) (k2 k2))
+  (precedes ((0 4) (1 4)) ((1 5) (0 5)))
+  (non-orig k1 k2)
+  (uniq-orig nv c1 c2)
+  (operation encryption-test (displaced 2 1 prover 6)
+    (enc idv-0 idp-0 np-0 nv h2-0 c2-0 k2) (0 5))
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))))
+    ((recv idv) (send idp) (recv c1-0) (send (cat np h1-0))
+      (recv (cat nv c2 (enc idv idp np h1-0 c1-0 k1-0)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (label 2)
+  (parent 1)
+  (unrealized)
+  (shape)
+  (maps
+    ((0)
+      ((idv idv) (idp idp) (nv nv) (c1 c1) (c2 c2) (k1 k1) (k2 k2)
+        (np np) (h1 h1) (h2 h2))))
+  (origs (nv (0 4)) (c1 (0 2)) (c2 (0 4))))</pre>
+
+<p id="t3">Tree <a href="#top">3</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='129.840pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 129.840 79.920' font-size='12.000'>
+  <text
+   x='89.880' y='26.040' style='text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k4&quot;, &quot;_self&quot;)'>4</text>
+  <line
+   x1='39.960' y1='39.960' x2='89.880' y2='39.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k3&quot;, &quot;_self&quot;)'>3</text>
+  </svg></div>
+
+<pre>(defprotocol AAoTVerification basic
+  (defrole prover
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (defrole verifier
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (comment &quot;AAoT Device Verification Protocol Definition&quot;))</pre>
+
+<p id="k3">Item <a href="#t3">3</a>, Child: <a href="#k4">4</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='454.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 454.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='414.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle style='fill: red;' cx='39.960' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title>
+   <circle style='fill: blue;' cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title><circle cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title>
+   <circle style='fill: blue;' cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (idv idv) (idp idp) (k1 k1))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>prover</text></g>
+  <text
+   x='39.960' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 3</text></svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (np nv c1 c2 text) (h1 data) (idv idp name) (k1 skey))
+  (defstrand prover 5 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (idv idv)
+    (idp idp) (k1 k1))
+  (non-orig k1)
+  (uniq-orig np)
+  (comment &quot;Authentication from the prover&apos;s perspective&quot;)
+  (traces
+    ((recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))))
+  (label 3)
+  (unrealized (0 4))
+  (origs (np (0 3)))
+  (comment &quot;1 in cohort - 1 not yet seen&quot;))</pre>
+
+<p id="k4">Item <a href="#t3">4</a>, Parent: <a href="#k3">3</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='454.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 454.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='414.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='414.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 139.920 414.960 Q 92.940 414.960 45.960 414.960'
+   style='stroke-dasharray: 6.000,2.400; stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat nv-0 c2-0 (enc idv idp np h1 c1 k1))</title>
+   <circle cx='139.920' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle style='fill: blue;' cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title><circle cx='139.920' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title>
+   <circle style='fill: blue;' cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title><circle cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle style='fill: blue;' cx='39.960' cy='414.960' r='6.000'/></g>
+  <path
+   d='M 39.960 339.960 Q 86.940 339.960 133.920 339.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat np h1)</title>
+   <circle cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title>
+   <circle style='fill: blue;' cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title><circle cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title>
+   <circle style='fill: blue;' cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv-0) (np np) (c1 c1) (c2 c2-0) (h1 h1) (idv idv) (idp idp) (k1 k1))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>verifier</text>
+   </g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (idv idv) (idp idp) (k1 k1))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>prover</text></g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 4 (realized)</text>
+  </svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (np nv c1 c2 nv-0 c2-0 text) (h1 data) (idv idp name) (k1 skey))
+  (defstrand prover 5 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (idv idv)
+    (idp idp) (k1 k1))
+  (defstrand verifier 5 (nv nv-0) (np np) (c1 c1) (c2 c2-0) (h1 h1)
+    (idv idv) (idp idp) (k1 k1))
+  (precedes ((0 3) (1 3)) ((1 4) (0 4)))
+  (non-orig k1)
+  (uniq-orig np)
+  (operation encryption-test (added-strand verifier 5)
+    (enc idv idp np h1 c1 k1) (0 4))
+  (traces
+    ((recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1))))
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv-0 c2-0 (enc idv idp np h1 c1 k1)))))
+  (label 4)
+  (parent 3)
+  (unrealized)
+  (shape)
+  (maps
+    ((0)
+      ((idv idv) (idp idp) (np np) (k1 k1) (nv nv) (c1 c1) (c2 c2)
+        (h1 h1))))
+  (origs (np (0 3))))</pre>
+
+<p id="t5">Tree <a href="#top">5</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='129.840pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 129.840 79.920' font-size='12.000'>
+  <text
+   x='89.880' y='26.040' style='text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k6&quot;, &quot;_self&quot;)'>6</text>
+  <line
+   x1='39.960' y1='39.960' x2='89.880' y2='39.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k5&quot;, &quot;_self&quot;)'>5</text>
+  </svg></div>
+
+<pre>(defprotocol AAoTVerification basic
+  (defrole prover
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (defrole verifier
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (comment &quot;AAoT Device Verification Protocol Definition&quot;))</pre>
+
+<p id="k5">Item <a href="#t5">5</a>, Child: <a href="#k6">6</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='279.840pt' height='529.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 279.840 529.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='239.880' y1='114.960' x2='239.880' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>k2</title><circle cx='239.880' cy='189.960' r='6.000'/></g>
+  <g><title>k2</title>
+   <circle style='fill: blue;' cx='239.880' cy='114.960' r='6.000'/></g>
+  <g><title>k1</title><circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>k1</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))</title>
+   <circle style='fill: blue;' cx='39.960' cy='489.960' r='6.000'/></g>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle cx='39.960' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title><circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title><circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2) (idv idv) (idp idp) (k1 k1) (k2 k2))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>verifier</text>
+   </g>
+  <text
+   x='139.920' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 5 (realized)</text>
+  </svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (nv c1 c2 np text) (h1 h2 data) (idv idp name) (k1 k2 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (deflistener k1)
+  (deflistener k2)
+  (comment &quot;Secrecy from the verifier&apos;s perspective&quot;)
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))))
+    ((recv k1) (send k1)) ((recv k2) (send k2)))
+  (label 5)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1 2)
+      ((idv idv) (idp idp) (nv nv) (c1 c1) (c2 c2) (k1 k1) (k2 k2)
+        (np np) (h1 h1) (h2 h2))))
+  (origs))</pre>
+
+<p id="k6">Item <a href="#t5">6</a>, Parent: <a href="#k5">5</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='529.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 529.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='489.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>k1</title><circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>k1</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(cat h2 (enc nv k1) (enc idv idp np nv h2 c2 k1))</title>
+   <circle style='fill: blue;' cx='39.960' cy='489.960' r='6.000'/></g>
+  <g><title>(cat nv c2 (enc idv idp np h1 c1 k1))</title>
+   <circle cx='39.960' cy='414.960' r='6.000'/></g>
+  <g><title>(cat np h1)</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>c1</title><circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>idp</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>idv</title><circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2) (idv idv) (idp idp) (k1 k1) (k2 k1))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>verifier</text>
+   </g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>AAoTVerification 6 (realized)</text>
+  </svg></div>
+
+<pre>(defskeleton AAoTVerification
+  (vars (nv c1 c2 np text) (h1 h2 data) (idv idp name) (k1 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k1))
+  (deflistener k1)
+  (operation collapsed 2 1)
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k1) (enc idv idp np nv h2 c2 k1))))
+    ((recv k1) (send k1)))
+  (label 6)
+  (parent 5)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1 1)
+      ((idv idv) (idp idp) (nv nv) (c1 c1) (c2 c2) (k1 k1) (k2 k1)
+        (np np) (h1 h1) (h2 h2))))
+  (origs))</pre>
+
+</body>
+</html>

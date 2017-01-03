@@ -1,0 +1,253 @@
+(comment "CPSA 2.2.12")
+(comment "Extracted shapes")
+
+(herald "AAoT Authorization Protocol")
+
+(comment "CPSA 2.2.12")
+
+(comment "All input read from AAoTAuth.scm")
+
+(defprotocol AAoTAuth basic
+  (defrole oem
+    (vars (idv ido idp name) (nv no text) (crps pufrot data))
+    (trace (recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))
+      (send
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (defrole verifier
+    (vars (idv ido idp name) (nv no text) (crps pufrot data))
+    (trace (send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (comment "AAoT Authorization Protocol Definition"))
+
+(defskeleton AAoTAuth
+  (vars (nv no text) (crps pufrot data) (idv ido idp name))
+  (defstrand verifier 4 (nv nv) (no no) (crps crps) (pufrot pufrot)
+    (idv idv) (ido ido) (idp idp))
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig nv)
+  (comment "Authentication from the verifier's perspective")
+  (traces
+    ((send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (label 0)
+  (unrealized (0 3))
+  (origs (nv (0 0)))
+  (comment "1 in cohort - 1 not yet seen"))
+
+(defskeleton AAoTAuth
+  (vars (nv no text) (crps pufrot data) (idv ido idp name))
+  (defstrand verifier 4 (nv nv) (no no) (crps crps) (pufrot pufrot)
+    (idv idv) (ido ido) (idp idp))
+  (defstrand oem 4 (nv nv) (no no) (crps crps) (pufrot pufrot) (idv idv)
+    (ido ido) (idp idp))
+  (precedes ((0 0) (1 0)) ((0 2) (1 2)) ((1 3) (0 3)))
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig nv)
+  (operation encryption-test (displaced 2 0 verifier 3)
+    (enc idv ido nv no idp (privk idv)) (1 2))
+  (traces
+    ((send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv))))
+    ((recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))
+      (send
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (label 2)
+  (parent 0)
+  (unrealized)
+  (shape)
+  (maps
+    ((0)
+      ((idv idv) (ido ido) (nv nv) (idp idp) (no no) (crps crps)
+        (pufrot pufrot))))
+  (origs (nv (0 0))))
+
+(comment "Nothing left to do")
+
+(defprotocol AAoTAuth basic
+  (defrole oem
+    (vars (idv ido idp name) (nv no text) (crps pufrot data))
+    (trace (recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))
+      (send
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (defrole verifier
+    (vars (idv ido idp name) (nv no text) (crps pufrot data))
+    (trace (send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (comment "AAoT Authorization Protocol Definition"))
+
+(defskeleton AAoTAuth
+  (vars (no nv text) (idv ido idp name))
+  (defstrand oem 3 (nv nv) (no no) (idv idv) (ido ido) (idp idp))
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig no)
+  (comment "Authentication from the OEM's perspective")
+  (traces
+    ((recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))))
+  (label 3)
+  (unrealized (0 2))
+  (origs (no (0 1)))
+  (comment "1 in cohort - 1 not yet seen"))
+
+(defskeleton AAoTAuth
+  (vars (no nv text) (idv ido idp name))
+  (defstrand oem 3 (nv nv) (no no) (idv idv) (ido ido) (idp idp))
+  (defstrand verifier 3 (nv nv) (no no) (idv idv) (ido ido) (idp idp))
+  (precedes ((0 1) (1 1)) ((1 2) (0 2)))
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig no)
+  (operation encryption-test (added-strand verifier 3)
+    (enc idv ido nv no idp (privk idv)) (0 2))
+  (traces
+    ((recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv)))))
+    ((send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))))
+  (label 4)
+  (parent 3)
+  (unrealized)
+  (shape)
+  (maps ((0) ((idv idv) (ido ido) (no no) (idp idp) (nv nv))))
+  (origs (no (0 1))))
+
+(comment "Nothing left to do")
+
+(defprotocol AAoTAuth basic
+  (defrole oem
+    (vars (idv ido idp name) (nv no text) (crps pufrot data))
+    (trace (recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))
+      (send
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (defrole verifier
+    (vars (idv ido idp name) (nv no text) (crps pufrot data))
+    (trace (send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (comment "AAoT Authorization Protocol Definition"))
+
+(defskeleton AAoTAuth
+  (vars (nv no text) (crps pufrot data) (idv ido idp name))
+  (defstrand verifier 4 (nv nv) (no no) (crps crps) (pufrot pufrot)
+    (idv idv) (ido ido) (idp idp))
+  (deflistener crps)
+  (deflistener pufrot)
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig nv)
+  (comment "Secrecy from the verifier's perspective")
+  (traces
+    ((send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))) ((recv crps) (send crps))
+    ((recv pufrot) (send pufrot)))
+  (label 5)
+  (unrealized (0 3))
+  (origs (nv (0 0)))
+  (comment "1 in cohort - 1 not yet seen"))
+
+(defskeleton AAoTAuth
+  (vars (nv no text) (crps pufrot data) (idv ido idp name))
+  (defstrand verifier 4 (nv nv) (no no) (crps crps) (pufrot pufrot)
+    (idv idv) (ido ido) (idp idp))
+  (deflistener crps)
+  (deflistener pufrot)
+  (defstrand oem 4 (nv nv) (no no) (crps crps) (pufrot pufrot) (idv idv)
+    (ido ido) (idp idp))
+  (precedes ((0 0) (3 0)) ((0 2) (3 2)) ((3 3) (0 3)))
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig nv)
+  (operation encryption-test (displaced 4 0 verifier 3)
+    (enc idv ido nv no idp (privk idv)) (3 2))
+  (traces
+    ((send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))) ((recv crps) (send crps))
+    ((recv pufrot) (send pufrot))
+    ((recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))
+      (send
+        (enc crps pufrot
+          (enc idv ido nv no idp (hash crps) (hash pufrot) (privk ido))
+          (pubk idv)))))
+  (label 9)
+  (parent 5)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1 2)
+      ((idv idv) (ido ido) (nv nv) (crps crps) (pufrot pufrot) (idp idp)
+        (no no))))
+  (origs (nv (0 0))))
+
+(defskeleton AAoTAuth
+  (vars (nv no text) (crps data) (idv ido idp name))
+  (defstrand verifier 4 (nv nv) (no no) (crps crps) (pufrot crps)
+    (idv idv) (ido ido) (idp idp))
+  (deflistener crps)
+  (defstrand oem 4 (nv nv) (no no) (crps crps) (pufrot crps) (idv idv)
+    (ido ido) (idp idp))
+  (precedes ((0 0) (2 0)) ((0 2) (2 2)) ((2 3) (0 3)))
+  (non-orig (privk idv) (privk ido))
+  (uniq-orig nv)
+  (operation encryption-test (displaced 3 0 verifier 3)
+    (enc idv ido nv no idp (privk idv)) (2 2))
+  (traces
+    ((send (cat idv nv)) (recv (cat ido no))
+      (send (cat idp (enc idv ido nv no idp (privk idv))))
+      (recv
+        (enc crps crps
+          (enc idv ido nv no idp (hash crps) (hash crps) (privk ido))
+          (pubk idv)))) ((recv crps) (send crps))
+    ((recv (cat idv nv)) (send (cat ido no))
+      (recv (cat idp (enc idv ido nv no idp (privk idv))))
+      (send
+        (enc crps crps
+          (enc idv ido nv no idp (hash crps) (hash crps) (privk ido))
+          (pubk idv)))))
+  (label 10)
+  (parent 5)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1 1)
+      ((idv idv) (ido ido) (nv nv) (crps crps) (pufrot crps) (idp idp)
+        (no no))))
+  (origs (nv (0 0))))
+
+(comment "Nothing left to do")

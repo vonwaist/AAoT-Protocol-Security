@@ -1,0 +1,181 @@
+(comment "CPSA 2.2.12")
+(comment "Extracted shapes")
+
+(herald "AAoT Verification Protocol")
+
+(comment "CPSA 2.2.12")
+
+(comment "All input read from AAoTVerification.scm")
+
+(defprotocol AAoTVerification basic
+  (defrole prover
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (defrole verifier
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (comment "AAoT Device Verification Protocol Definition"))
+
+(defskeleton AAoTVerification
+  (vars (nv c1 c2 np text) (h1 h2 data) (idv idp name) (k1 k2 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (non-orig k1 k2)
+  (uniq-orig nv c1 c2)
+  (comment "Authentication from the verifier's perspective")
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (label 0)
+  (unrealized (0 5))
+  (origs (nv (0 4)) (c1 (0 2)) (c2 (0 4)))
+  (comment "1 in cohort - 1 not yet seen"))
+
+(defskeleton AAoTVerification
+  (vars (nv c1 np c1-0 c2 text) (h1 h1-0 h2 data) (idv idp name)
+    (k1 k2 k1-0 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (defstrand prover 6 (nv nv) (np np) (c1 c1-0) (c2 c2) (h1 h1-0)
+    (h2 h2) (idv idv) (idp idp) (k1 k1-0) (k2 k2))
+  (precedes ((0 4) (1 4)) ((1 5) (0 5)))
+  (non-orig k1 k2)
+  (uniq-orig nv c1 c2)
+  (operation encryption-test (displaced 2 1 prover 6)
+    (enc idv-0 idp-0 np-0 nv h2-0 c2-0 k2) (0 5))
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))))
+    ((recv idv) (send idp) (recv c1-0) (send (cat np h1-0))
+      (recv (cat nv c2 (enc idv idp np h1-0 c1-0 k1-0)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (label 2)
+  (parent 0)
+  (unrealized)
+  (shape)
+  (maps
+    ((0)
+      ((idv idv) (idp idp) (nv nv) (c1 c1) (c2 c2) (k1 k1) (k2 k2)
+        (np np) (h1 h1) (h2 h2))))
+  (origs (nv (0 4)) (c1 (0 2)) (c2 (0 4))))
+
+(comment "Nothing left to do")
+
+(defprotocol AAoTVerification basic
+  (defrole prover
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (defrole verifier
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (comment "AAoT Device Verification Protocol Definition"))
+
+(defskeleton AAoTVerification
+  (vars (np nv c1 c2 text) (h1 data) (idv idp name) (k1 skey))
+  (defstrand prover 5 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (idv idv)
+    (idp idp) (k1 k1))
+  (non-orig k1)
+  (uniq-orig np)
+  (comment "Authentication from the prover's perspective")
+  (traces
+    ((recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))))
+  (label 3)
+  (unrealized (0 4))
+  (origs (np (0 3)))
+  (comment "1 in cohort - 1 not yet seen"))
+
+(defskeleton AAoTVerification
+  (vars (np nv c1 c2 nv-0 c2-0 text) (h1 data) (idv idp name) (k1 skey))
+  (defstrand prover 5 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (idv idv)
+    (idp idp) (k1 k1))
+  (defstrand verifier 5 (nv nv-0) (np np) (c1 c1) (c2 c2-0) (h1 h1)
+    (idv idv) (idp idp) (k1 k1))
+  (precedes ((0 3) (1 3)) ((1 4) (0 4)))
+  (non-orig k1)
+  (uniq-orig np)
+  (operation encryption-test (added-strand verifier 5)
+    (enc idv idp np h1 c1 k1) (0 4))
+  (traces
+    ((recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1))))
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv-0 c2-0 (enc idv idp np h1 c1 k1)))))
+  (label 4)
+  (parent 3)
+  (unrealized)
+  (shape)
+  (maps
+    ((0)
+      ((idv idv) (idp idp) (np np) (k1 k1) (nv nv) (c1 c1) (c2 c2)
+        (h1 h1))))
+  (origs (np (0 3))))
+
+(comment "Nothing left to do")
+
+(defprotocol AAoTVerification basic
+  (defrole prover
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (recv idv) (send idp) (recv c1) (send (cat np h1))
+      (recv (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (send (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (defrole verifier
+    (vars (idv idp name) (nv np c1 c2 text) (h1 h2 data) (k1 k2 skey))
+    (trace (send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2)))))
+  (comment "AAoT Device Verification Protocol Definition"))
+
+(defskeleton AAoTVerification
+  (vars (nv c1 c2 np text) (h1 h2 data) (idv idp name) (k1 k2 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k2))
+  (deflistener k1)
+  (deflistener k2)
+  (comment "Secrecy from the verifier's perspective")
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k2) (enc idv idp np nv h2 c2 k2))))
+    ((recv k1) (send k1)) ((recv k2) (send k2)))
+  (label 5)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1 2)
+      ((idv idv) (idp idp) (nv nv) (c1 c1) (c2 c2) (k1 k1) (k2 k2)
+        (np np) (h1 h1) (h2 h2))))
+  (origs))
+
+(defskeleton AAoTVerification
+  (vars (nv c1 c2 np text) (h1 h2 data) (idv idp name) (k1 skey))
+  (defstrand verifier 6 (nv nv) (np np) (c1 c1) (c2 c2) (h1 h1) (h2 h2)
+    (idv idv) (idp idp) (k1 k1) (k2 k1))
+  (deflistener k1)
+  (operation collapsed 2 1)
+  (traces
+    ((send idv) (recv idp) (send c1) (recv (cat np h1))
+      (send (cat nv c2 (enc idv idp np h1 c1 k1)))
+      (recv (cat h2 (enc nv k1) (enc idv idp np nv h2 c2 k1))))
+    ((recv k1) (send k1)))
+  (label 6)
+  (parent 5)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1 1)
+      ((idv idv) (idp idp) (nv nv) (c1 c1) (c2 c2) (k1 k1) (k2 k1)
+        (np np) (h1 h1) (h2 h2))))
+  (origs))
+
+(comment "Nothing left to do")
